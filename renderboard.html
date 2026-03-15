@@ -12,6 +12,7 @@
       --bg: #f7f6f4; --white: #fff; --ink: #1a1a18;
       --muted: #7a7670; --line: #e5e3de;
       --accent: #c0460f; --accent-bg: #fdf1ec;
+      --pin: #e60023; --pin-bg: #fff0f1;
       --panel: 400px; --r: 10px;
     }
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
@@ -37,6 +38,23 @@
     .icon-btn { width: 36px; height: 36px; border: 1.5px solid var(--line); border-radius: var(--r); background: var(--bg); cursor: pointer; font-size: .95rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: .15s; }
     .icon-btn:hover { border-color: var(--ink); }
 
+    /* ── Source Toggle ── */
+    .srcbar { background: var(--white); border-bottom: 1px solid var(--line); padding: 8px 20px; display: flex; align-items: center; gap: 8px; }
+    .srcbar-label { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+    .src-btn { padding: 5px 14px; border-radius: 999px; font: 600 .78rem 'DM Sans', sans-serif; cursor: pointer; border: 1.5px solid var(--line); background: transparent; color: var(--muted); transition: .15s; }
+    .src-btn:hover { border-color: var(--ink); color: var(--ink); }
+    .src-btn.on[data-src="pexels"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .src-btn.on[data-src="pinterest"] { background: var(--pin); color: #fff; border-color: var(--pin); }
+    .src-divider { width: 1px; height: 18px; background: var(--line); }
+
+    /* ── Pinterest Bar ── */
+    .pinbar { background: var(--pin-bg); border-bottom: 1px solid #f5d0d4; padding: 10px 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .pinbar-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .pinbar input { flex: 1; min-width: 220px; padding: 8px 13px; border: 1.5px solid #f0c0c5; border-radius: var(--r); font: inherit; font-size: .85rem; outline: none; background: var(--white); transition: .15s; }
+    .pinbar input:focus { border-color: var(--pin); }
+    .pinbar-hint { font-size: .75rem; color: #b06070; line-height: 1.5; flex-basis: 100%; padding-top: 2px; }
+    .pinbar-hint a { color: var(--pin); text-decoration: none; font-weight: 600; }
+
     /* ── Style Tabs ── */
     .stylesbar { background: var(--white); border-bottom: 1px solid var(--line); padding: 0 20px; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
     .stylesbar::-webkit-scrollbar { display: none; }
@@ -61,13 +79,14 @@
     .use-btn { background: var(--white); color: var(--ink); border: none; border-radius: 6px; padding: 7px 14px; font-size: .78rem; font-weight: 700; cursor: pointer; font: inherit; transition: .15s; }
     .use-btn:hover { background: var(--accent); color: var(--white); }
     .photo-credit { position: absolute; top: 7px; right: 7px; background: rgba(0,0,0,.48); color: #fff; font-size: .62rem; padding: 3px 7px; border-radius: 4px; opacity: 0; transition: opacity .2s; }
+    .pin-badge { position: absolute; top: 7px; left: 7px; background: var(--pin); color: #fff; font-size: .6rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; letter-spacing: .04em; }
     .img-card:hover .photo-credit { opacity: 1; }
 
     /* ── States ── */
     .state { text-align: center; padding: 80px 20px; }
     .state-icon { font-size: 2.6rem; margin-bottom: 14px; }
     .state h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
-    .state p { font-size: .88rem; color: var(--muted); line-height: 1.65; max-width: 380px; margin: 0 auto; }
+    .state p { font-size: .88rem; color: var(--muted); line-height: 1.65; max-width: 400px; margin: 0 auto 16px; }
     .spinner { width: 26px; height: 26px; border: 2.5px solid var(--line); border-top-color: var(--ink); border-radius: 50%; animation: spin .65s linear infinite; margin: 0 auto 12px; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .load-more { text-align: center; padding: 24px 0 36px; }
@@ -78,10 +97,12 @@
     .panel-top { padding: 16px 18px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--white); z-index: 1; }
     .panel-top h3 { font-size: .92rem; font-weight: 700; }
     .close-btn { width: 28px; height: 28px; border: none; background: var(--bg); border-radius: 6px; cursor: pointer; font-size: .9rem; }
-    .ref-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+    .ref-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; background: var(--line); }
     .psec { padding: 16px 18px; border-bottom: 1px solid var(--line); }
     .plabel { font-size: .68rem; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
     .badge { display: inline-flex; background: var(--accent-bg); color: var(--accent); font-size: .78rem; font-weight: 600; padding: 4px 11px; border-radius: 999px; }
+    .badge.pin { background: var(--pin-bg); color: var(--pin); }
+    .source-tag { display: inline-flex; align-items: center; gap: 5px; font-size: .78rem; color: var(--muted); margin-top: 6px; }
     .ptabs { display: flex; border-bottom: 1px solid var(--line); }
     .ptab { flex: 1; padding: 9px 4px; font-size: .76rem; font-weight: 600; border: none; background: none; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; font: inherit; transition: .15s; }
     .ptab.on { color: var(--ink); border-bottom-color: var(--ink); }
@@ -97,6 +118,7 @@
     .btn { padding: 9px 18px; border-radius: var(--r); font: 600 .85rem 'DM Sans', sans-serif; cursor: pointer; border: none; transition: .15s; }
     .btn-dark { background: var(--ink); color: #fff; } .btn-dark:hover { background: #2e2e2c; }
     .btn-ghost { background: var(--bg); border: 1.5px solid var(--line); color: var(--ink); } .btn-ghost:hover { border-color: var(--ink); }
+    .btn-pin { background: var(--pin); color: #fff; } .btn-pin:hover { background: #c0001f; }
     .btn-sm { padding: 7px 14px; font-size: .8rem; }
     .off { display: none !important; }
   </style>
@@ -123,7 +145,7 @@
 <div class="topbar">
   <div class="brand">Render<span>Board</span></div>
   <input type="text" id="productInput" placeholder="Describe your product  (e.g. glass perfume bottle, wireless earbuds, matcha powder tin)" onkeydown="if(event.key==='Enter') doSearch()"/>
-  <select id="catSelect">
+  <select id="catSelect" class="pexels-only">
     <option value="">All Types</option>
     <option value="beauty skincare cosmetics">Beauty / Skincare</option>
     <option value="electronics technology gadget">Electronics</option>
@@ -135,8 +157,29 @@
     <option value="luxury premium high end">Luxury Goods</option>
     <option value="packaging branding label">Packaging</option>
   </select>
-  <button class="btn btn-dark btn-sm" onclick="doSearch()">Search</button>
+  <button class="btn btn-dark btn-sm pexels-only" onclick="doSearch()">Search</button>
   <button class="icon-btn" onclick="showApiModal()" title="API Settings">⚙</button>
+</div>
+
+<!-- ── Source Toggle ── -->
+<div class="srcbar">
+  <span class="srcbar-label">Source</span>
+  <button class="src-btn on" data-src="pexels" onclick="switchSource(this)">Pexels Photos</button>
+  <button class="src-btn" data-src="pinterest" onclick="switchSource(this)">📌 Pinterest</button>
+  <div class="src-divider"></div>
+  <span style="font-size:.75rem;color:var(--muted)">Pick a source, then choose a style below</span>
+</div>
+
+<!-- ── Pinterest Bar ── -->
+<div class="pinbar off" id="pinBar">
+  <div class="pinbar-icon">📌</div>
+  <input type="text" id="pinUrlInput" placeholder="Paste a Pinterest board or search URL  (e.g. pinterest.com/username/board-name/)" onkeydown="if(event.key==='Enter') importPinterest()"/>
+  <button class="btn btn-pin btn-sm" onclick="importPinterest()">Import Board</button>
+  <button class="btn btn-ghost btn-sm" onclick="openPinterestSearch()">Search on Pinterest ↗</button>
+  <div class="pinbar-hint">
+    Paste any <strong>public</strong> Pinterest board URL to import images. For best results use boards with product photography.
+    <a href="https://pinterest.com/search/pins/?q=product+photography" target="_blank">Browse Pinterest →</a>
+  </div>
 </div>
 
 <!-- ── Style Tabs ── -->
@@ -160,19 +203,19 @@
 
     <div class="state" id="emptyState">
       <div class="state-icon">🎨</div>
-      <h3>Find your inspiration</h3>
-      <p>Describe your product above and hit Search. Pick any reference you love — RenderBoard will generate a ready-to-use AI render prompt for Midjourney, DALL·E 3, or Stable Diffusion.</p>
+      <h3 id="emptyTitle">Find your inspiration</h3>
+      <p id="emptyDesc">Describe your product above and hit Search. Pick any reference you love — RenderBoard will generate a ready-to-use AI render prompt for Midjourney, DALL·E 3, or Stable Diffusion.</p>
     </div>
 
     <div class="state off" id="loadState">
       <div class="spinner"></div>
-      <p style="color:var(--muted)">Searching across the web…</p>
+      <p style="color:var(--muted)" id="loadMsg">Searching across the web…</p>
     </div>
 
     <div class="masonry off" id="imgGrid"></div>
 
     <div class="load-more off" id="loadMoreArea">
-      <button class="btn btn-ghost" onclick="loadMore()">Load more inspiration ↓</button>
+      <button class="btn btn-ghost" id="loadMoreBtn" onclick="loadMore()">Load more inspiration ↓</button>
     </div>
 
   </div>
@@ -189,8 +232,9 @@
       <div id="pProduct" style="font-size:.9rem;font-weight:600"></div>
     </div>
     <div class="psec" style="border-bottom:none">
-      <div class="plabel">Detected Style</div>
+      <div class="plabel">Style & Source</div>
       <div id="pStyle" class="badge"></div>
+      <div id="pSource" class="source-tag"></div>
     </div>
     <div class="ptabs" id="ptabs">
       <button class="ptab on" data-t="midjourney" onclick="switchTool(this)">Midjourney</button>
@@ -212,11 +256,13 @@
 // ── State ────────────────────────────────────────────────────────
 let apiKey = localStorage.getItem('rb_key') || '';
 let demo = false;
+let source = 'pexels'; // 'pexels' | 'pinterest'
 let style = 'all';
 let page = 1;
 let tool = 'midjourney';
 let varIdx = 0;
 let selectedImg = '';
+let pinImages = []; // cached Pinterest images for load-more
 
 // ── Init ─────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
@@ -232,6 +278,26 @@ function saveKey() {
 }
 function startDemo() { demo = true; hide('apiModal'); showDemoGrid(); }
 function showApiModal() { show('apiModal'); }
+
+// ── Source switching ──────────────────────────────────────────────
+function switchSource(btn) {
+  document.querySelectorAll('.src-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  source = btn.dataset.src;
+
+  const isPex = source === 'pexels';
+  document.querySelectorAll('.pexels-only').forEach(el => el.classList.toggle('off', !isPex));
+  document.getElementById('pinBar').classList.toggle('off', isPex);
+
+  if (!isPex) {
+    document.getElementById('emptyTitle').textContent = 'Import from Pinterest';
+    document.getElementById('emptyDesc').textContent = 'Paste any public Pinterest board URL above and click Import Board. All pin images will appear here — pick one as your render reference.';
+    show('emptyState'); hide('imgGrid'); hide('loadMoreArea');
+  } else {
+    document.getElementById('emptyTitle').textContent = 'Find your inspiration';
+    document.getElementById('emptyDesc').textContent = 'Describe your product above and hit Search. Pick any reference you love — RenderBoard will generate a ready-to-use AI render prompt for Midjourney, DALL·E 3, or Stable Diffusion.';
+  }
+}
 
 // ── Style config ─────────────────────────────────────────────────
 const STYLE_Q = {
@@ -253,8 +319,10 @@ const STYLE_LABELS = {
   macro:'Macro', editorial:'Editorial', neon:'Neon / Dark'
 };
 
-// ── Search ───────────────────────────────────────────────────────
+// ── Pexels search ─────────────────────────────────────────────────
 async function doSearch(reset = true) {
+  if (source === 'pinterest') { importPinterest(); return; }
+
   const product = document.getElementById('productInput').value.trim();
   const cat = document.getElementById('catSelect').value;
   if (!product) { alert('Describe your product first.'); return; }
@@ -262,6 +330,7 @@ async function doSearch(reset = true) {
   if (!apiKey) { show('apiModal'); return; }
 
   if (reset) page = 1;
+  document.getElementById('loadMsg').textContent = 'Searching across the web…';
   show('loadState'); hide('emptyState');
   if (reset) { document.getElementById('imgGrid').innerHTML = ''; hide('imgGrid'); }
 
@@ -271,18 +340,19 @@ async function doSearch(reset = true) {
   const q3 = `${product} ${qs[2] || qs[0]}`;
 
   try {
-    const [r1, r2, r3] = await Promise.all([fetch1(q1, page), fetch1(q2, page), fetch1(q3, page)]);
+    const [r1, r2, r3] = await Promise.all([fetchPex(q1, page), fetchPex(q2, page), fetchPex(q3, page)]);
     const photos = dedup([...r1, ...r2, ...r3]);
     renderPhotos(photos, !reset);
     hide('loadState'); show('imgGrid'); show('loadMoreArea');
+    document.getElementById('loadMoreBtn').onclick = loadMore;
   } catch (e) {
     hide('loadState'); show('emptyState');
-    document.querySelector('#emptyState h3').textContent = 'Search failed';
-    document.querySelector('#emptyState p').textContent = e.message + ' — check your API key.';
+    document.getElementById('emptyTitle').textContent = 'Search failed';
+    document.getElementById('emptyDesc').textContent = e.message + ' — check your API key.';
   }
 }
 
-async function fetch1(q, p) {
+async function fetchPex(q, p) {
   const r = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(q)}&per_page=10&page=${p}`, {
     headers: { Authorization: apiKey }
   });
@@ -301,10 +371,10 @@ function switchStyle(btn) {
   document.querySelectorAll('.stab').forEach(b => b.classList.remove('on'));
   btn.classList.add('on');
   style = btn.dataset.s;
-  if (document.getElementById('productInput').value.trim()) doSearch();
+  if (document.getElementById('productInput').value.trim() && source === 'pexels') doSearch();
 }
 
-// ── Render photos ─────────────────────────────────────────────────
+// ── Render Pexels photos ──────────────────────────────────────────
 function renderPhotos(photos, append) {
   const grid = document.getElementById('imgGrid');
   if (!append) grid.innerHTML = '';
@@ -315,31 +385,98 @@ function renderPhotos(photos, append) {
     d.innerHTML = `
       <img src="${p.src.large}" alt="${alt}" loading="lazy"/>
       <div class="card-hover">
-        <button class="use-btn" onclick="pickRef(event,'${p.src.large}','${alt}','${p.photographer}')">Use as Reference →</button>
+        <button class="use-btn" onclick="pickRef(event,'${p.src.large}','${alt}','Pexels · ${p.photographer}','pexels')">Use as Reference →</button>
       </div>
       <div class="photo-credit">${p.photographer}</div>`;
     grid.appendChild(d);
   });
 }
 
+// ── Pinterest import ──────────────────────────────────────────────
+async function importPinterest() {
+  const rawUrl = document.getElementById('pinUrlInput').value.trim();
+  if (!rawUrl) { alert('Paste a Pinterest board URL first.'); return; }
+
+  document.getElementById('loadMsg').textContent = 'Importing from Pinterest…';
+  show('loadState'); hide('emptyState'); hide('imgGrid');
+  document.getElementById('imgGrid').innerHTML = '';
+
+  try {
+    // Try allorigins.win CORS proxy
+    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(rawUrl)}`;
+    const res = await fetch(proxy, { signal: AbortSignal.timeout(15000) });
+    if (!res.ok) throw new Error('Proxy unreachable');
+    const { contents } = await res.json();
+
+    if (!contents || contents.length < 500) throw new Error('Pinterest returned an empty or login-gated page. Make sure the board is public.');
+
+    // Extract all i.pinimg.com image URLs
+    const raw = contents.match(/https:\/\/i\.pinimg\.com\/(?:originals|736x|474x|236x)\/[a-f0-9/]+\.(?:jpg|jpeg|png|webp)/gi) || [];
+
+    // Upgrade smaller sizes to 736x, deduplicate
+    const upgraded = raw.map(u => u.replace(/\/(?:originals|474x|236x)\//, '/736x/'));
+    pinImages = [...new Set(upgraded)];
+
+    if (pinImages.length === 0) throw new Error('No images found in this board. Try a different public Pinterest board URL.');
+
+    renderPinImages(pinImages.slice(0, 30));
+    hide('loadState'); show('imgGrid'); show('loadMoreArea');
+
+    // Load more pages through existing cached set
+    let pinOffset = 30;
+    document.getElementById('loadMoreBtn').onclick = () => {
+      const next = pinImages.slice(pinOffset, pinOffset + 30);
+      if (next.length) { renderPinImages(next, true); pinOffset += 30; }
+      else { hide('loadMoreArea'); }
+    };
+
+  } catch (e) {
+    hide('loadState'); show('emptyState');
+    document.getElementById('emptyTitle').textContent = 'Pinterest import failed';
+    document.getElementById('emptyDesc').textContent = e.message;
+  }
+}
+
+function renderPinImages(urls, append = false) {
+  const grid = document.getElementById('imgGrid');
+  if (!append) grid.innerHTML = '';
+  urls.forEach((src, i) => {
+    const d = document.createElement('div');
+    d.className = 'img-card';
+    d.innerHTML = `
+      <img src="${src}" alt="Pinterest reference" loading="lazy" onerror="this.closest('.img-card').remove()"/>
+      <div class="card-hover">
+        <button class="use-btn" onclick="pickRef(event,'${src}','Pinterest reference','Pinterest','pinterest')">Use as Reference →</button>
+      </div>
+      <div class="pin-badge">📌</div>`;
+    grid.appendChild(d);
+  });
+}
+
+function openPinterestSearch() {
+  const product = document.getElementById('productInput').value.trim();
+  const q = product ? `${product} product photography` : 'product photography inspiration';
+  window.open(`https://pinterest.com/search/pins/?q=${encodeURIComponent(q)}`, '_blank');
+}
+
 // ── Demo grid ─────────────────────────────────────────────────────
 function showDemoGrid() {
   const grid = document.getElementById('imgGrid');
   const items = [
-    ['Studio','f0e9e0','Studio Shot'],['Dramatic','1a1a2e','Dramatic'],['Lifestyle','e8d5c0','Lifestyle'],
-    ['Flat Lay','f5f0e8','Flat Lay'],['Minimal','fafafa','Minimal'],['Luxury','2c2416','Luxury'],
-    ['Nature','d4e8d0','Nature'],['Macro','e8e0d4','Macro'],['Editorial','e0d8f0','Editorial'],
-    ['Neon','0d0d1a','Neon / Dark'],['Studio 2','f7f3ee','Studio 2'],['Lifestyle 2','ddd0c0','Lifestyle 2']
+    ['f0e9e0','Studio'],['1a1a2e','Dramatic'],['e8d5c0','Lifestyle'],['f5f0e8','Flat Lay'],
+    ['fafafa','Minimal'],['2c2416','Luxury'],['d4e8d0','Nature'],['e8e0d4','Macro'],
+    ['e0d8f0','Editorial'],['0d0d1a','Neon'],['f7f3ee','Studio 2'],['ddd0c0','Lifestyle 2']
   ];
   grid.innerHTML = '';
-  items.forEach(([label, bg, title], i) => {
+  items.forEach(([bg, title], i) => {
     const d = document.createElement('div');
     d.className = 'img-card';
     const h = 220 + (i % 4) * 60;
+    const textColor = parseInt(bg, 16) > 0x888888 ? '666' : 'aaa';
     d.innerHTML = `
-      <div style="background:#${bg};height:${h}px;display:flex;align-items:center;justify-content:center;color:#${parseInt(bg,16)>0x888888?'666':'aaa'};font-size:.8rem;font-weight:600">${title}</div>
+      <div style="background:#${bg};height:${h}px;display:flex;align-items:center;justify-content:center;color:#${textColor};font-size:.8rem;font-weight:600">${title}</div>
       <div class="card-hover">
-        <button class="use-btn" onclick="pickRef(event,'demo','${title}','Demo')">Use as Reference →</button>
+        <button class="use-btn" onclick="pickRef(event,'demo','${title}','Demo','pexels')">Use as Reference →</button>
       </div>`;
     grid.appendChild(d);
   });
@@ -347,15 +484,25 @@ function showDemoGrid() {
 }
 
 // ── Pick reference ────────────────────────────────────────────────
-function pickRef(e, src, alt, photographer) {
+function pickRef(e, src, alt, credit, srcType) {
   e.stopPropagation();
   selectedImg = src;
   document.querySelectorAll('.img-card').forEach(c => c.classList.remove('picked'));
   e.target.closest('.img-card').classList.add('picked');
 
-  document.getElementById('refImg').src = src;
+  const refImg = document.getElementById('refImg');
+  refImg.src = src === 'demo' ? '' : src;
+  refImg.style.display = src === 'demo' ? 'none' : 'block';
+
   document.getElementById('pProduct').textContent = document.getElementById('productInput').value || 'Your product';
-  document.getElementById('pStyle').textContent = STYLE_LABELS[style] || style;
+
+  const styleEl = document.getElementById('pStyle');
+  styleEl.textContent = STYLE_LABELS[style] || style;
+  styleEl.className = `badge${srcType === 'pinterest' ? ' pin' : ''}`;
+
+  document.getElementById('pSource').innerHTML = srcType === 'pinterest'
+    ? '📌 <strong>Pinterest</strong> reference'
+    : `📷 ${credit}`;
 
   openPanel(); buildPrompt();
 }
@@ -371,7 +518,7 @@ function switchTool(btn) {
   buildPrompt();
 }
 
-// ── Prompt builder ─────────────────────────────────────────────────
+// ── Prompt builder ────────────────────────────────────────────────
 const STYLE_PROMPTS = {
   all:       'professional commercial product photography, {p}, clean studio backdrop, soft even lighting, polished finish',
   studio:    'studio product photography, {p}, pure white seamless background, dual softbox lighting at 45°, crisp shadow, perfect exposure, commercial grade',
@@ -395,9 +542,9 @@ const VARS = [
   'jewel tones, deep and saturated'
 ];
 const TOOL_WRAP = {
-  midjourney: (s) => `${s} --ar 4:5 --style raw --q 2 --v 6.1`,
-  dalle:      (s) => `${s}. Shot on Hasselblad H6D-100c, 120mm lens, f/8, ISO 100. Ultra-photorealistic, 8K resolution, advertising quality, color-graded in Capture One.`,
-  sd:         (s) => `${s}, (product photography:1.4), (commercial advertising:1.2), photorealistic, 8k uhd, Fujifilm GFX100S, RAW photo, sharp focus, soft studio lighting, high quality`
+  midjourney: s => `${s} --ar 4:5 --style raw --q 2 --v 6.1`,
+  dalle:      s => `${s}. Shot on Hasselblad H6D-100c, 120mm lens, f/8, ISO 100. Ultra-photorealistic, 8K resolution, advertising quality, color-graded in Capture One.`,
+  sd:         s => `${s}, (product photography:1.4), (commercial advertising:1.2), photorealistic, 8k uhd, Fujifilm GFX100S, RAW photo, sharp focus, soft studio lighting, high quality`
 };
 
 function buildPrompt() {
