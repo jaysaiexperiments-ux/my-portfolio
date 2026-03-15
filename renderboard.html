@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>RenderBoard — Product Render Inspiration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f7f6f4; --white: #fff; --ink: #1a1a18;
+      --muted: #7a7670; --line: #e5e3de;
+      --accent: #c0460f; --accent-bg: #fdf1ec;
+      --panel: 400px; --r: 10px;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ── Modal ── */
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 900; }
+    .overlay.off { display: none; }
+    .modal { background: var(--white); border-radius: 18px; padding: 40px; max-width: 460px; width: 92%; box-shadow: 0 24px 60px rgba(0,0,0,.18); }
+    .modal h2 { font-size: 1.35rem; font-weight: 700; margin-bottom: 6px; }
+    .modal .sub { font-size: .88rem; color: var(--muted); line-height: 1.65; margin-bottom: 24px; }
+    .modal .sub a { color: var(--accent); text-decoration: none; }
+    .field { width: 100%; padding: 11px 15px; border: 1.5px solid var(--line); border-radius: var(--r); font: inherit; font-size: .9rem; outline: none; transition: .15s; margin-bottom: 10px; }
+    .field:focus { border-color: var(--ink); }
+    .row { display: flex; gap: 10px; }
+
+    /* ── Top Bar ── */
+    .topbar { background: var(--white); border-bottom: 1px solid var(--line); padding: 12px 20px; display: flex; gap: 10px; align-items: center; position: sticky; top: 0; z-index: 200; }
+    .brand { font-weight: 700; font-size: 1rem; letter-spacing: -.3px; white-space: nowrap; flex-shrink: 0; }
+    .brand span { color: var(--accent); }
+    .topbar input { flex: 1; min-width: 0; padding: 9px 14px; border: 1.5px solid var(--line); border-radius: var(--r); font: inherit; font-size: .88rem; outline: none; background: var(--bg); transition: .15s; }
+    .topbar input:focus { border-color: var(--ink); background: var(--white); }
+    .topbar select { padding: 9px 12px; border: 1.5px solid var(--line); border-radius: var(--r); font: inherit; font-size: .84rem; background: var(--bg); cursor: pointer; outline: none; flex-shrink: 0; }
+    .icon-btn { width: 36px; height: 36px; border: 1.5px solid var(--line); border-radius: var(--r); background: var(--bg); cursor: pointer; font-size: .95rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: .15s; }
+    .icon-btn:hover { border-color: var(--ink); }
+
+    /* ── Style Tabs ── */
+    .stylesbar { background: var(--white); border-bottom: 1px solid var(--line); padding: 0 20px; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+    .stylesbar::-webkit-scrollbar { display: none; }
+    .stab { padding: 10px 14px; font-size: .8rem; font-weight: 500; border: none; background: none; cursor: pointer; white-space: nowrap; color: var(--muted); border-bottom: 2px solid transparent; transition: .15s; font: inherit; margin-bottom: -1px; }
+    .stab:hover { color: var(--ink); }
+    .stab.on { color: var(--ink); font-weight: 700; border-bottom-color: var(--ink); }
+
+    /* ── Layout ── */
+    .main { display: flex; flex: 1; overflow: hidden; }
+    .grid-wrap { flex: 1; padding: 20px; overflow-y: auto; transition: margin-right .3s; }
+    .grid-wrap.shifted { margin-right: var(--panel); }
+
+    /* ── Masonry ── */
+    .masonry { columns: 4 200px; column-gap: 12px; }
+    @media (max-width: 680px) { .masonry { columns: 2 140px; } }
+    .img-card { break-inside: avoid; margin-bottom: 12px; border-radius: var(--r); overflow: hidden; position: relative; cursor: pointer; background: var(--line); }
+    .img-card img { width: 100%; display: block; transition: transform .3s; }
+    .img-card:hover img { transform: scale(1.04); }
+    .card-hover { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.72) 0%, transparent 55%); opacity: 0; transition: opacity .2s; display: flex; align-items: flex-end; padding: 12px; }
+    .img-card:hover .card-hover { opacity: 1; }
+    .img-card.picked { outline: 3px solid var(--accent); outline-offset: -1px; }
+    .use-btn { background: var(--white); color: var(--ink); border: none; border-radius: 6px; padding: 7px 14px; font-size: .78rem; font-weight: 700; cursor: pointer; font: inherit; transition: .15s; }
+    .use-btn:hover { background: var(--accent); color: var(--white); }
+    .photo-credit { position: absolute; top: 7px; right: 7px; background: rgba(0,0,0,.48); color: #fff; font-size: .62rem; padding: 3px 7px; border-radius: 4px; opacity: 0; transition: opacity .2s; }
+    .img-card:hover .photo-credit { opacity: 1; }
+
+    /* ── States ── */
+    .state { text-align: center; padding: 80px 20px; }
+    .state-icon { font-size: 2.6rem; margin-bottom: 14px; }
+    .state h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+    .state p { font-size: .88rem; color: var(--muted); line-height: 1.65; max-width: 380px; margin: 0 auto; }
+    .spinner { width: 26px; height: 26px; border: 2.5px solid var(--line); border-top-color: var(--ink); border-radius: 50%; animation: spin .65s linear infinite; margin: 0 auto 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .load-more { text-align: center; padding: 24px 0 36px; }
+
+    /* ── Prompt Panel ── */
+    .panel { position: fixed; right: 0; top: 0; bottom: 0; width: var(--panel); background: var(--white); border-left: 1px solid var(--line); transform: translateX(100%); transition: transform .3s; z-index: 300; display: flex; flex-direction: column; overflow-y: auto; }
+    .panel.open { transform: translateX(0); }
+    .panel-top { padding: 16px 18px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--white); z-index: 1; }
+    .panel-top h3 { font-size: .92rem; font-weight: 700; }
+    .close-btn { width: 28px; height: 28px; border: none; background: var(--bg); border-radius: 6px; cursor: pointer; font-size: .9rem; }
+    .ref-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+    .psec { padding: 16px 18px; border-bottom: 1px solid var(--line); }
+    .plabel { font-size: .68rem; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+    .badge { display: inline-flex; background: var(--accent-bg); color: var(--accent); font-size: .78rem; font-weight: 600; padding: 4px 11px; border-radius: 999px; }
+    .ptabs { display: flex; border-bottom: 1px solid var(--line); }
+    .ptab { flex: 1; padding: 9px 4px; font-size: .76rem; font-weight: 600; border: none; background: none; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; font: inherit; transition: .15s; }
+    .ptab.on { color: var(--ink); border-bottom-color: var(--ink); }
+    .pbox { position: relative; margin: 14px 18px 6px; }
+    textarea { width: 100%; background: var(--bg); border: 1.5px solid var(--line); border-radius: var(--r); padding: 13px; font: .8rem/1.7 'DM Sans', sans-serif; color: var(--ink); resize: none; outline: none; min-height: 175px; transition: .15s; }
+    textarea:focus { border-color: var(--ink); }
+    .copy-btn { position: absolute; top: 9px; right: 9px; padding: 4px 11px; font-size: .73rem; font-weight: 600; border: 1.5px solid var(--line); background: var(--white); border-radius: 6px; cursor: pointer; font: inherit; transition: .15s; }
+    .copy-btn:hover { background: var(--ink); color: var(--white); border-color: var(--ink); }
+    .copy-btn.ok { background: #16a34a; color: #fff; border-color: #16a34a; }
+    .panel-actions { padding: 10px 18px 20px; display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* ── Buttons ── */
+    .btn { padding: 9px 18px; border-radius: var(--r); font: 600 .85rem 'DM Sans', sans-serif; cursor: pointer; border: none; transition: .15s; }
+    .btn-dark { background: var(--ink); color: #fff; } .btn-dark:hover { background: #2e2e2c; }
+    .btn-ghost { background: var(--bg); border: 1.5px solid var(--line); color: var(--ink); } .btn-ghost:hover { border-color: var(--ink); }
+    .btn-sm { padding: 7px 14px; font-size: .8rem; }
+    .off { display: none !important; }
+  </style>
+</head>
+<body>
+
+<!-- ── API Key Modal ── -->
+<div class="overlay" id="apiModal">
+  <div class="modal">
+    <h2>Connect Pexels API</h2>
+    <p class="sub">
+      RenderBoard uses <a href="https://www.pexels.com/api/" target="_blank">Pexels</a> to search millions of real product photos — completely free.
+      Get your key in 60 seconds at <a href="https://www.pexels.com/api/" target="_blank">pexels.com/api</a> (no credit card).
+    </p>
+    <input class="field" type="text" id="keyInput" placeholder="Paste your Pexels API key..."/>
+    <div class="row">
+      <button class="btn btn-dark" onclick="saveKey()">Save & Start</button>
+      <button class="btn btn-ghost" onclick="startDemo()">Try Demo Mode</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Top Bar ── -->
+<div class="topbar">
+  <div class="brand">Render<span>Board</span></div>
+  <input type="text" id="productInput" placeholder="Describe your product  (e.g. glass perfume bottle, wireless earbuds, matcha powder tin)" onkeydown="if(event.key==='Enter') doSearch()"/>
+  <select id="catSelect">
+    <option value="">All Types</option>
+    <option value="beauty skincare cosmetics">Beauty / Skincare</option>
+    <option value="electronics technology gadget">Electronics</option>
+    <option value="fashion apparel clothing">Fashion</option>
+    <option value="food beverage drink">Food & Beverage</option>
+    <option value="furniture interior home decor">Home & Furniture</option>
+    <option value="jewelry accessories">Jewelry</option>
+    <option value="fitness sport gym">Fitness & Sports</option>
+    <option value="luxury premium high end">Luxury Goods</option>
+    <option value="packaging branding label">Packaging</option>
+  </select>
+  <button class="btn btn-dark btn-sm" onclick="doSearch()">Search</button>
+  <button class="icon-btn" onclick="showApiModal()" title="API Settings">⚙</button>
+</div>
+
+<!-- ── Style Tabs ── -->
+<div class="stylesbar">
+  <button class="stab on" data-s="all"       onclick="switchStyle(this)">✦ All Styles</button>
+  <button class="stab"    data-s="studio"    onclick="switchStyle(this)">Studio</button>
+  <button class="stab"    data-s="dramatic"  onclick="switchStyle(this)">Dramatic</button>
+  <button class="stab"    data-s="lifestyle" onclick="switchStyle(this)">Lifestyle</button>
+  <button class="stab"    data-s="flatlay"   onclick="switchStyle(this)">Flat Lay</button>
+  <button class="stab"    data-s="minimal"   onclick="switchStyle(this)">Minimal</button>
+  <button class="stab"    data-s="luxury"    onclick="switchStyle(this)">Luxury</button>
+  <button class="stab"    data-s="nature"    onclick="switchStyle(this)">Nature</button>
+  <button class="stab"    data-s="macro"     onclick="switchStyle(this)">Macro</button>
+  <button class="stab"    data-s="editorial" onclick="switchStyle(this)">Editorial</button>
+  <button class="stab"    data-s="neon"      onclick="switchStyle(this)">Neon / Dark</button>
+</div>
+
+<!-- ── Main ── -->
+<div class="main">
+  <div class="grid-wrap" id="gridWrap">
+
+    <div class="state" id="emptyState">
+      <div class="state-icon">🎨</div>
+      <h3>Find your inspiration</h3>
+      <p>Describe your product above and hit Search. Pick any reference you love — RenderBoard will generate a ready-to-use AI render prompt for Midjourney, DALL·E 3, or Stable Diffusion.</p>
+    </div>
+
+    <div class="state off" id="loadState">
+      <div class="spinner"></div>
+      <p style="color:var(--muted)">Searching across the web…</p>
+    </div>
+
+    <div class="masonry off" id="imgGrid"></div>
+
+    <div class="load-more off" id="loadMoreArea">
+      <button class="btn btn-ghost" onclick="loadMore()">Load more inspiration ↓</button>
+    </div>
+
+  </div>
+
+  <!-- ── Prompt Panel ── -->
+  <div class="panel" id="panel">
+    <div class="panel-top">
+      <h3>Render Prompt</h3>
+      <button class="close-btn" onclick="closePanel()">✕</button>
+    </div>
+    <img id="refImg" class="ref-img" src="" alt="Reference"/>
+    <div class="psec">
+      <div class="plabel">Product</div>
+      <div id="pProduct" style="font-size:.9rem;font-weight:600"></div>
+    </div>
+    <div class="psec" style="border-bottom:none">
+      <div class="plabel">Detected Style</div>
+      <div id="pStyle" class="badge"></div>
+    </div>
+    <div class="ptabs" id="ptabs">
+      <button class="ptab on" data-t="midjourney" onclick="switchTool(this)">Midjourney</button>
+      <button class="ptab" data-t="dalle"      onclick="switchTool(this)">DALL·E 3</button>
+      <button class="ptab" data-t="sd"         onclick="switchTool(this)">Stable Diffusion</button>
+    </div>
+    <div class="pbox">
+      <textarea id="promptOut" readonly></textarea>
+      <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">Copy</button>
+    </div>
+    <div class="panel-actions">
+      <button class="btn btn-ghost btn-sm" onclick="regenPrompt()">↻ New variation</button>
+      <button class="btn btn-ghost btn-sm" onclick="doSearch()">🔄 More refs</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ────────────────────────────────────────────────────────
+let apiKey = localStorage.getItem('rb_key') || '';
+let demo = false;
+let style = 'all';
+let page = 1;
+let tool = 'midjourney';
+let varIdx = 0;
+let selectedImg = '';
+
+// ── Init ─────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  if (!apiKey) show('apiModal'); else hide('apiModal');
+});
+
+function saveKey() {
+  const v = document.getElementById('keyInput').value.trim();
+  if (!v) { alert('Please enter your API key.'); return; }
+  apiKey = v; demo = false;
+  localStorage.setItem('rb_key', v);
+  hide('apiModal');
+}
+function startDemo() { demo = true; hide('apiModal'); showDemoGrid(); }
+function showApiModal() { show('apiModal'); }
+
+// ── Style config ─────────────────────────────────────────────────
+const STYLE_Q = {
+  all:       ['product commercial photography', 'studio product shot', 'product advertising'],
+  studio:    ['studio product photography white background', 'clean commercial product shot', 'softbox product photography'],
+  dramatic:  ['dark moody product photography', 'dramatic lighting product', 'cinematic dark product shot'],
+  lifestyle: ['lifestyle product photography in use', 'product lifestyle context', 'product real life setting'],
+  flatlay:   ['flat lay product photography overhead', 'top down styled product shot', 'flat lay styled props'],
+  minimal:   ['minimalist product photography', 'white clean minimal product', 'simple product photography'],
+  luxury:    ['luxury product photography gold marble', 'premium high end product shot', 'luxury brand photography'],
+  nature:    ['outdoor product natural light', 'botanical product photography', 'nature organic product'],
+  macro:     ['macro product detail photography', 'close up product texture', 'extreme macro product'],
+  editorial: ['editorial product photography magazine', 'artistic creative product shot', 'fashion product editorial'],
+  neon:      ['neon light product photography dark', 'colorful neon product shot', 'cyberpunk product photography']
+};
+const STYLE_LABELS = {
+  all:'Mixed Styles', studio:'Studio', dramatic:'Dramatic', lifestyle:'Lifestyle',
+  flatlay:'Flat Lay', minimal:'Minimal', luxury:'Luxury', nature:'Nature',
+  macro:'Macro', editorial:'Editorial', neon:'Neon / Dark'
+};
+
+// ── Search ───────────────────────────────────────────────────────
+async function doSearch(reset = true) {
+  const product = document.getElementById('productInput').value.trim();
+  const cat = document.getElementById('catSelect').value;
+  if (!product) { alert('Describe your product first.'); return; }
+  if (demo) { showDemoGrid(); return; }
+  if (!apiKey) { show('apiModal'); return; }
+
+  if (reset) page = 1;
+  show('loadState'); hide('emptyState');
+  if (reset) { document.getElementById('imgGrid').innerHTML = ''; hide('imgGrid'); }
+
+  const qs = STYLE_Q[style] || STYLE_Q.all;
+  const q1 = `${product} ${cat} ${qs[0]}`;
+  const q2 = `${product} ${cat} ${qs[1] || qs[0]}`;
+  const q3 = `${product} ${qs[2] || qs[0]}`;
+
+  try {
+    const [r1, r2, r3] = await Promise.all([fetch1(q1, page), fetch1(q2, page), fetch1(q3, page)]);
+    const photos = dedup([...r1, ...r2, ...r3]);
+    renderPhotos(photos, !reset);
+    hide('loadState'); show('imgGrid'); show('loadMoreArea');
+  } catch (e) {
+    hide('loadState'); show('emptyState');
+    document.querySelector('#emptyState h3').textContent = 'Search failed';
+    document.querySelector('#emptyState p').textContent = e.message + ' — check your API key.';
+  }
+}
+
+async function fetch1(q, p) {
+  const r = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(q)}&per_page=10&page=${p}`, {
+    headers: { Authorization: apiKey }
+  });
+  if (!r.ok) throw new Error(`Pexels ${r.status}`);
+  return (await r.json()).photos || [];
+}
+
+function dedup(arr) {
+  const seen = new Set();
+  return arr.filter(p => { if (seen.has(p.id)) return false; seen.add(p.id); return true; });
+}
+
+function loadMore() { page++; doSearch(false); }
+
+function switchStyle(btn) {
+  document.querySelectorAll('.stab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  style = btn.dataset.s;
+  if (document.getElementById('productInput').value.trim()) doSearch();
+}
+
+// ── Render photos ─────────────────────────────────────────────────
+function renderPhotos(photos, append) {
+  const grid = document.getElementById('imgGrid');
+  if (!append) grid.innerHTML = '';
+  photos.forEach(p => {
+    const d = document.createElement('div');
+    d.className = 'img-card';
+    const alt = (p.alt || 'product photo').replace(/'/g, '');
+    d.innerHTML = `
+      <img src="${p.src.large}" alt="${alt}" loading="lazy"/>
+      <div class="card-hover">
+        <button class="use-btn" onclick="pickRef(event,'${p.src.large}','${alt}','${p.photographer}')">Use as Reference →</button>
+      </div>
+      <div class="photo-credit">${p.photographer}</div>`;
+    grid.appendChild(d);
+  });
+}
+
+// ── Demo grid ─────────────────────────────────────────────────────
+function showDemoGrid() {
+  const grid = document.getElementById('imgGrid');
+  const items = [
+    ['Studio','f0e9e0','Studio Shot'],['Dramatic','1a1a2e','Dramatic'],['Lifestyle','e8d5c0','Lifestyle'],
+    ['Flat Lay','f5f0e8','Flat Lay'],['Minimal','fafafa','Minimal'],['Luxury','2c2416','Luxury'],
+    ['Nature','d4e8d0','Nature'],['Macro','e8e0d4','Macro'],['Editorial','e0d8f0','Editorial'],
+    ['Neon','0d0d1a','Neon / Dark'],['Studio 2','f7f3ee','Studio 2'],['Lifestyle 2','ddd0c0','Lifestyle 2']
+  ];
+  grid.innerHTML = '';
+  items.forEach(([label, bg, title], i) => {
+    const d = document.createElement('div');
+    d.className = 'img-card';
+    const h = 220 + (i % 4) * 60;
+    d.innerHTML = `
+      <div style="background:#${bg};height:${h}px;display:flex;align-items:center;justify-content:center;color:#${parseInt(bg,16)>0x888888?'666':'aaa'};font-size:.8rem;font-weight:600">${title}</div>
+      <div class="card-hover">
+        <button class="use-btn" onclick="pickRef(event,'demo','${title}','Demo')">Use as Reference →</button>
+      </div>`;
+    grid.appendChild(d);
+  });
+  hide('emptyState'); hide('loadState'); show('imgGrid'); show('loadMoreArea');
+}
+
+// ── Pick reference ────────────────────────────────────────────────
+function pickRef(e, src, alt, photographer) {
+  e.stopPropagation();
+  selectedImg = src;
+  document.querySelectorAll('.img-card').forEach(c => c.classList.remove('picked'));
+  e.target.closest('.img-card').classList.add('picked');
+
+  document.getElementById('refImg').src = src;
+  document.getElementById('pProduct').textContent = document.getElementById('productInput').value || 'Your product';
+  document.getElementById('pStyle').textContent = STYLE_LABELS[style] || style;
+
+  openPanel(); buildPrompt();
+}
+
+// ── Panel ─────────────────────────────────────────────────────────
+function openPanel()  { document.getElementById('panel').classList.add('open'); document.getElementById('gridWrap').classList.add('shifted'); }
+function closePanel() { document.getElementById('panel').classList.remove('open'); document.getElementById('gridWrap').classList.remove('shifted'); document.querySelectorAll('.img-card').forEach(c => c.classList.remove('picked')); }
+
+function switchTool(btn) {
+  document.querySelectorAll('.ptab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  tool = btn.dataset.t;
+  buildPrompt();
+}
+
+// ── Prompt builder ─────────────────────────────────────────────────
+const STYLE_PROMPTS = {
+  all:       'professional commercial product photography, {p}, clean studio backdrop, soft even lighting, polished finish',
+  studio:    'studio product photography, {p}, pure white seamless background, dual softbox lighting at 45°, crisp shadow, perfect exposure, commercial grade',
+  dramatic:  'dramatic product photography, {p}, single hard-source key light, deep directional shadows, dark moody background, strong rim light for separation, high contrast',
+  lifestyle: 'lifestyle product photography, {p}, natural real-world context, shallow depth of field, warm ambient light, authentic environment, relatable and human',
+  flatlay:   'flat lay product photography, {p}, 90° overhead angle, clean styled surface, symmetrical composition, uniform soft light, complementary prop styling',
+  minimal:   'ultra-minimalist product photography, {p}, vast negative white space, single centered subject, barely-there shadow, surgical precision in layout',
+  luxury:    'luxury product photography, {p}, polished marble or dark velvet surface, directional warm accent light, gold and dark tones, high-fashion editorial feel',
+  nature:    'outdoor natural product photography, {p}, lush botanical greenery, dappled sunlight, earthy organic textures, fresh and clean brand feel',
+  macro:     'extreme macro product photography, {p}, reveal of surface texture and material detail, razor-thin focal plane, neutral bokeh background, f/2.8 depth-of-field',
+  editorial: 'editorial magazine product photography, {p}, bold art-directed composition, strong color narrative, unexpected angle, fashion-forward styling and props',
+  neon:      'neon-lit product photography, {p}, dark smoky backdrop, vivid neon color reflections on surface, cyberpunk atmosphere, long-exposure light painting'
+};
+const VARS = [
+  'warm golden tones, rich shadows',
+  'cool desaturated palette, clean and clinical',
+  'bold saturated colors, vivid and energetic',
+  'black and white high contrast monochrome',
+  'pastel soft tones, airy and light',
+  'muted earth tones, organic and natural',
+  'jewel tones, deep and saturated'
+];
+const TOOL_WRAP = {
+  midjourney: (s) => `${s} --ar 4:5 --style raw --q 2 --v 6.1`,
+  dalle:      (s) => `${s}. Shot on Hasselblad H6D-100c, 120mm lens, f/8, ISO 100. Ultra-photorealistic, 8K resolution, advertising quality, color-graded in Capture One.`,
+  sd:         (s) => `${s}, (product photography:1.4), (commercial advertising:1.2), photorealistic, 8k uhd, Fujifilm GFX100S, RAW photo, sharp focus, soft studio lighting, high quality`
+};
+
+function buildPrompt() {
+  const product = document.getElementById('productInput').value.trim() || 'the product';
+  const skey = style === 'all' ? 'studio' : style;
+  const base = (STYLE_PROMPTS[skey] || STYLE_PROMPTS.studio).replace('{p}', product);
+  const variation = VARS[varIdx % VARS.length];
+  const full = `${base}, ${variation}`;
+  document.getElementById('promptOut').value = (TOOL_WRAP[tool] || TOOL_WRAP.midjourney)(full);
+  const cb = document.getElementById('copyBtn');
+  cb.textContent = 'Copy'; cb.classList.remove('ok');
+}
+
+function regenPrompt() { varIdx++; buildPrompt(); }
+
+function copyPrompt() {
+  navigator.clipboard.writeText(document.getElementById('promptOut').value).then(() => {
+    const b = document.getElementById('copyBtn');
+    b.textContent = 'Copied!'; b.classList.add('ok');
+    setTimeout(() => { b.textContent = 'Copy'; b.classList.remove('ok'); }, 2000);
+  });
+}
+
+// ── Helpers ───────────────────────────────────────────────────────
+function show(id) { document.getElementById(id).classList.remove('off'); }
+function hide(id) { document.getElementById(id).classList.add('off'); }
+</script>
+</body>
+</html>
