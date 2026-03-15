@@ -173,13 +173,8 @@
 <!-- ── Pinterest Bar ── -->
 <div class="pinbar off" id="pinBar">
   <div class="pinbar-icon">📌</div>
-  <input type="text" id="pinUrlInput" placeholder="Paste a Pinterest board or search URL  (e.g. pinterest.com/username/board-name/)" onkeydown="if(event.key==='Enter') importPinterest()"/>
-  <button class="btn btn-pin btn-sm" onclick="importPinterest()">Import Board</button>
-  <button class="btn btn-ghost btn-sm" onclick="openPinterestSearch()">Search on Pinterest ↗</button>
-  <div class="pinbar-hint">
-    Paste any <strong>public</strong> Pinterest board URL to import images. For best results use boards with product photography.
-    <a href="https://pinterest.com/search/pins/?q=product+photography" target="_blank">Browse Pinterest →</a>
-  </div>
+  <span style="font-size:.88rem;color:#b06070">Your product query will be searched on Pinterest in a new tab — pick references there and come back to generate prompts.</span>
+  <button class="btn btn-pin btn-sm" onclick="openPinterestSearch()">Search Pinterest ↗</button>
 </div>
 
 <!-- ── Style Tabs ── -->
@@ -290,8 +285,8 @@ function switchSource(btn) {
   document.getElementById('pinBar').classList.toggle('off', isPex);
 
   if (!isPex) {
-    document.getElementById('emptyTitle').textContent = 'Import from Pinterest';
-    document.getElementById('emptyDesc').textContent = 'Paste any public Pinterest board URL above and click Import Board. All pin images will appear here — pick one as your render reference.';
+    document.getElementById('emptyTitle').textContent = 'Search Pinterest';
+    document.getElementById('emptyDesc').textContent = 'Describe your product above and click Search — your query opens on Pinterest in a new tab so you can browse real references. Come back here to generate your render prompt.';
     show('emptyState'); hide('imgGrid'); hide('loadMoreArea');
   } else {
     document.getElementById('emptyTitle').textContent = 'Find your inspiration';
@@ -321,7 +316,7 @@ const STYLE_LABELS = {
 
 // ── Pexels search ─────────────────────────────────────────────────
 async function doSearch(reset = true) {
-  if (source === 'pinterest') { importPinterest(); return; }
+  if (source === 'pinterest') { openPinterestSearch(); return; }
 
   const product = document.getElementById('productInput').value.trim();
   const cat = document.getElementById('catSelect').value;
@@ -392,70 +387,11 @@ function renderPhotos(photos, append) {
   });
 }
 
-// ── Pinterest import ──────────────────────────────────────────────
-async function importPinterest() {
-  const rawUrl = document.getElementById('pinUrlInput').value.trim();
-  if (!rawUrl) { alert('Paste a Pinterest board URL first.'); return; }
-
-  document.getElementById('loadMsg').textContent = 'Importing from Pinterest…';
-  show('loadState'); hide('emptyState'); hide('imgGrid');
-  document.getElementById('imgGrid').innerHTML = '';
-
-  try {
-    // Try allorigins.win CORS proxy
-    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(rawUrl)}`;
-    const res = await fetch(proxy, { signal: AbortSignal.timeout(15000) });
-    if (!res.ok) throw new Error('Proxy unreachable');
-    const { contents } = await res.json();
-
-    if (!contents || contents.length < 500) throw new Error('Pinterest returned an empty or login-gated page. Make sure the board is public.');
-
-    // Extract all i.pinimg.com image URLs
-    const raw = contents.match(/https:\/\/i\.pinimg\.com\/(?:originals|736x|474x|236x)\/[a-f0-9/]+\.(?:jpg|jpeg|png|webp)/gi) || [];
-
-    // Upgrade smaller sizes to 736x, deduplicate
-    const upgraded = raw.map(u => u.replace(/\/(?:originals|474x|236x)\//, '/736x/'));
-    pinImages = [...new Set(upgraded)];
-
-    if (pinImages.length === 0) throw new Error('No images found in this board. Try a different public Pinterest board URL.');
-
-    renderPinImages(pinImages.slice(0, 30));
-    hide('loadState'); show('imgGrid'); show('loadMoreArea');
-
-    // Load more pages through existing cached set
-    let pinOffset = 30;
-    document.getElementById('loadMoreBtn').onclick = () => {
-      const next = pinImages.slice(pinOffset, pinOffset + 30);
-      if (next.length) { renderPinImages(next, true); pinOffset += 30; }
-      else { hide('loadMoreArea'); }
-    };
-
-  } catch (e) {
-    hide('loadState'); show('emptyState');
-    document.getElementById('emptyTitle').textContent = 'Pinterest import failed';
-    document.getElementById('emptyDesc').textContent = e.message;
-  }
-}
-
-function renderPinImages(urls, append = false) {
-  const grid = document.getElementById('imgGrid');
-  if (!append) grid.innerHTML = '';
-  urls.forEach((src, i) => {
-    const d = document.createElement('div');
-    d.className = 'img-card';
-    d.innerHTML = `
-      <img src="${src}" alt="Pinterest reference" loading="lazy" onerror="this.closest('.img-card').remove()"/>
-      <div class="card-hover">
-        <button class="use-btn" onclick="pickRef(event,'${src}','Pinterest reference','Pinterest','pinterest')">Use as Reference →</button>
-      </div>
-      <div class="pin-badge">📌</div>`;
-    grid.appendChild(d);
-  });
-}
 
 function openPinterestSearch() {
   const product = document.getElementById('productInput').value.trim();
-  const q = product ? `${product} product photography` : 'product photography inspiration';
+  const styleHint = style !== 'all' ? ` ${STYLE_LABELS[style] || style} photography` : ' product photography';
+  const q = product ? `${product}${styleHint}` : 'product photography inspiration';
   window.open(`https://pinterest.com/search/pins/?q=${encodeURIComponent(q)}`, '_blank');
 }
 
