@@ -173,8 +173,7 @@
 <!-- ── Pinterest Bar ── -->
 <div class="pinbar off" id="pinBar">
   <div class="pinbar-icon">📌</div>
-  <span style="font-size:.88rem;color:#b06070">Your product query will be searched on Pinterest in a new tab — pick references there and come back to generate prompts.</span>
-  <button class="btn btn-pin btn-sm" onclick="openPinterestSearch()">Search Pinterest ↗</button>
+  <span style="font-size:.88rem;color:#b06070">Type your product above and hit Search — Pinterest results load right here. Pick any pin as your render reference.</span>
 </div>
 
 <!-- ── Style Tabs ── -->
@@ -316,7 +315,7 @@ const STYLE_LABELS = {
 
 // ── Pexels search ─────────────────────────────────────────────────
 async function doSearch(reset = true) {
-  if (source === 'pinterest') { openPinterestSearch(); return; }
+  if (source === 'pinterest') { searchPinterest(); return; }
 
   const product = document.getElementById('productInput').value.trim();
   const cat = document.getElementById('catSelect').value;
@@ -388,11 +387,64 @@ function renderPhotos(photos, append) {
 }
 
 
-function openPinterestSearch() {
+async function searchPinterest() {
   const product = document.getElementById('productInput').value.trim();
-  const styleHint = style !== 'all' ? ` ${STYLE_LABELS[style] || style} photography` : ' product photography';
-  const q = product ? `${product}${styleHint}` : 'product photography inspiration';
-  window.open(`https://pinterest.com/search/pins/?q=${encodeURIComponent(q)}`, '_blank');
+  if (!product) { alert('Describe your product first.'); return; }
+
+  const styleHint = style !== 'all' ? ` ${STYLE_LABELS[style]} photography` : ' product photography';
+  const q = `${product}${styleHint}`;
+  const pUrl = `https://www.pinterest.com/search/pins/?q=${encodeURIComponent(q)}`;
+
+  document.getElementById('loadMsg').textContent = 'Searching Pinterest…';
+  show('loadState'); hide('emptyState');
+  document.getElementById('imgGrid').innerHTML = ''; hide('imgGrid');
+
+  try {
+    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(pUrl)}`;
+    const res = await fetch(proxy, { signal: AbortSignal.timeout(18000) });
+    if (!res.ok) throw new Error('Proxy unreachable');
+    const { contents } = await res.json();
+    if (!contents || contents.length < 200) throw new Error('Pinterest returned an empty response — it may be blocking automated requests.');
+
+    // Extract all Pinterest CDN image URLs and upgrade to 736x
+    const raw = contents.match(/https:\/\/i\.pinimg\.com\/(?:originals|736x|474x|236x)\/[a-f0-9/]+\.(?:jpg|jpeg|png|webp)/gi) || [];
+    const upgraded = raw.map(u => u.replace(/\/(?:originals|474x|236x)\//, '/736x/'));
+    const unique = [...new Set(upgraded)];
+
+    if (unique.length === 0) throw new Error('No pin images found. Pinterest may be rate-limiting — try again in a moment.');
+
+    pinImages = unique;
+    renderPinImages(pinImages.slice(0, 30));
+    hide('loadState'); show('imgGrid'); show('loadMoreArea');
+
+    let offset = 30;
+    document.getElementById('loadMoreBtn').onclick = () => {
+      const next = pinImages.slice(offset, offset + 30);
+      if (next.length) { renderPinImages(next, true); offset += 30; }
+      else hide('loadMoreArea');
+    };
+  } catch (e) {
+    hide('loadState'); show('emptyState');
+    document.getElementById('emptyTitle').textContent = 'Pinterest search failed';
+    document.getElementById('emptyDesc').textContent = e.message;
+  }
+}
+
+function renderPinImages(urls, append = false) {
+  const grid = document.getElementById('imgGrid');
+  if (!append) grid.innerHTML = '';
+  urls.forEach(src => {
+    const d = document.createElement('div');
+    d.className = 'img-card';
+    const esc = src.replace(/'/g, '');
+    d.innerHTML = `
+      <img src="${esc}" alt="Pinterest reference" loading="lazy" onerror="this.closest('.img-card').remove()"/>
+      <div class="card-hover">
+        <button class="use-btn" onclick="pickRef(event,'${esc}','Pinterest reference','Pinterest','pinterest')">Use as Reference →</button>
+      </div>
+      <div class="pin-badge">📌</div>`;
+    grid.appendChild(d);
+  });
 }
 
 // ── Demo grid ─────────────────────────────────────────────────────
