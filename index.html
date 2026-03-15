@@ -1,305 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Jay — Marketer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #0a0118;
-      --surface: #120826;
-      --border: #2a1650;
-      --accent: #ff3cac;
-      --accent2: #784ba0;
-      --accent3: #2b86c5;
-      --text: #f5f0ff;
-      --muted: #a393c8;
-      --radius: 14px;
-    }
-
-    body {
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      background: var(--bg);
-      background-image:
-        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(120, 75, 160, 0.35) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(43, 134, 197, 0.25) 0%, transparent 60%);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 60px 24px 80px;
-    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#faf9f7;--ink:#1a1a18;--muted:#737068;--line:#e8e5e0;--accent:#c0460f;--r:8px}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);max-width:740px;margin:0 auto;padding:64px 28px 0}
 
     /* ── Hero ── */
-    .hero {
-      text-align: center;
-      max-width: 640px;
-      margin-bottom: 72px;
-    }
+    .hero{padding:80px 0 64px;border-bottom:1px solid var(--line)}
+    .role{font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:24px}
+    h1{font-family:'Instrument Serif',serif;font-size:clamp(3.2rem,9vw,5.8rem);line-height:1;letter-spacing:-2px;margin-bottom:24px}
+    h1 em{color:var(--accent);font-style:italic}
+    .hero>p{font-size:1.05rem;color:var(--muted);line-height:1.75;max-width:500px;margin-bottom:36px}
+    .links{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{padding:11px 22px;border-radius:var(--r);font-size:.88rem;font-weight:600;text-decoration:none;letter-spacing:-.01em;transition:.15s}
+    .btn-dark{background:var(--ink);color:#fff}.btn-dark:hover{background:#2e2e2c}
+    .btn-out{border:1.5px solid var(--line);color:var(--ink)}.btn-out:hover{border-color:var(--ink)}
 
-    .avatar {
-      width: 88px;
-      height: 88px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #ff3cac 0%, #784ba0 50%, #2b86c5 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.2rem;
-      font-weight: 700;
-      color: #fff;
-      margin: 0 auto 28px;
-      letter-spacing: -1px;
-      box-shadow: 0 0 32px rgba(255, 60, 172, 0.5), 0 0 64px rgba(120, 75, 160, 0.3);
-    }
+    /* ── Sections ── */
+    section{padding:60px 0;border-bottom:1px solid var(--line)}
+    .label{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:28px}
 
-    .hero h1 {
-      font-size: clamp(2.4rem, 6vw, 4rem);
-      font-weight: 800;
-      letter-spacing: -2px;
-      line-height: 1;
-      margin-bottom: 16px;
-    }
-
-    .hero h1 span {
-      background: linear-gradient(90deg, #ff3cac, #784ba0, #2b86c5);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero p {
-      font-size: 1.1rem;
-      color: var(--muted);
-      line-height: 1.7;
-      max-width: 480px;
-      margin: 0 auto 32px;
-    }
-
-    .badge {
-      display: inline-block;
-      background: linear-gradient(90deg, rgba(255,60,172,0.15), rgba(43,134,197,0.15));
-      border: 1px solid rgba(255, 60, 172, 0.4);
-      color: #ff7fd4;
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 6px 14px;
-      border-radius: 999px;
-      margin-bottom: 28px;
-    }
-
-    /* ── Cards grid ── */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
-      width: 100%;
-      max-width: 860px;
-      margin-bottom: 72px;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-
-    .card:hover {
-      border-color: var(--accent);
-      transform: translateY(-3px);
-    }
-
-    .card-icon {
-      font-size: 1.6rem;
-      margin-bottom: 14px;
-    }
-
-    .card h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-      letter-spacing: -0.3px;
-    }
-
-    .card p {
-      font-size: 0.9rem;
-      color: var(--muted);
-      line-height: 1.6;
-    }
+    /* ── Cards ── */
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:10px}
+    .card{border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;transition:.15s}
+    .card:hover{border-color:var(--ink);background:#fff}
+    .card-icon{font-size:1.3rem;margin-bottom:10px}
+    .card h3{font-size:.9rem;font-weight:700;margin-bottom:5px}
+    .card p{font-size:.82rem;color:var(--muted);line-height:1.55}
 
     /* ── Skills ── */
-    .skills {
-      width: 100%;
-      max-width: 860px;
-      margin-bottom: 72px;
-    }
+    .tags{display:flex;flex-wrap:wrap;gap:8px}
+    .tag{border:1px solid var(--line);border-radius:999px;padding:6px 15px;font-size:.82rem;transition:.15s;cursor:default}
+    .tag:hover{border-color:var(--accent);color:var(--accent)}
 
-    .section-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 20px;
-    }
+    /* ── Bio ── */
+    .bio-text p{font-size:1.05rem;line-height:1.8;color:#3a3935;margin-bottom:18px}
+    .bio-text p:last-child{margin-bottom:0}
 
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .tag {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 8px 18px;
-      font-size: 0.88rem;
-      color: var(--text);
-      transition: background 0.2s, border-color 0.2s, color 0.2s;
-      cursor: default;
-    }
-
-    .tag:hover {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #0d0d0d;
-    }
-
-    /* ── CTA ── */
-    .cta {
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 14px 28px;
-      border-radius: 999px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      text-decoration: none;
-      transition: opacity 0.2s, transform 0.15s;
-      cursor: pointer;
-      border: none;
-    }
-
-    .btn:hover { opacity: 0.85; transform: translateY(-2px); }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #0d0d0d;
-    }
-
-    .btn-ghost {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text);
-    }
+    /* ── Timeline ── */
+    .tl-item{display:grid;grid-template-columns:110px 1fr;gap:20px;padding:24px 0;border-top:1px solid var(--line)}
+    .tl-item:first-child{border-top:none;padding-top:0}
+    .tl-year{font-size:.8rem;color:var(--muted);padding-top:3px;font-variant-numeric:tabular-nums}
+    .tl-item h3{font-size:.95rem;font-weight:700;margin-bottom:3px}
+    .tl-co{font-size:.85rem;color:var(--accent);font-weight:500;margin-bottom:7px}
+    .tl-item p{font-size:.85rem;color:var(--muted);line-height:1.6}
 
     /* ── Footer ── */
-    footer {
-      margin-top: 80px;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    /* ── Divider ── */
-    .divider {
-      width: 100%;
-      max-width: 860px;
-      height: 1px;
-      background: var(--border);
-      margin-bottom: 56px;
-    }
+    footer{padding:32px 0 40px;display:flex;justify-content:space-between;align-items:center;font-size:.82rem;color:var(--muted)}
+    footer a{color:var(--muted);text-decoration:none;transition:.15s}.footer a:hover{color:var(--ink)}
   </style>
 </head>
 <body>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="avatar">J</div>
-    <div class="badge">Open to opportunities</div>
-    <h1>Hi, I'm <span>Jay.</span></h1>
-    <p>
-      I help brands cut through the noise — crafting campaigns, stories, and strategies that turn audiences into loyal customers.
-    </p>
-    <div class="cta">
-      <a href="mailto:jay@example.com" class="btn btn-primary">&#9993; Get in touch</a>
-      <a href="https://linkedin.com/in/jaybhanushaliatwork" target="_blank" rel="noopener" class="btn btn-ghost">&#128101; LinkedIn</a>
+  <div class="hero">
+    <div class="role">Marketer</div>
+    <h1>Hi, I'm <em>Jay.</em></h1>
+    <p>I help brands cut through the noise — crafting campaigns, stories, and strategies that turn audiences into loyal customers.</p>
+    <div class="links">
+      <a href="mailto:jaysaiexperiments@gmail.com" class="btn btn-dark">Get in touch</a>
+      <a href="https://linkedin.com/in/jaybhanushaliatwork" target="_blank" rel="noopener" class="btn btn-out">LinkedIn</a>
+      <a href="https://github.com/jaysaiexperiments-ux" target="_blank" rel="noopener" class="btn btn-out">GitHub</a>
+    </div>
+  </div>
+
+  <section>
+    <div class="label">What I do</div>
+    <div class="grid">
+      <div class="card"><div class="card-icon">📈</div><h3>Growth Marketing</h3><p>Data-driven campaigns from awareness to conversion and retention.</p></div>
+      <div class="card"><div class="card-icon">✍️</div><h3>Brand Storytelling</h3><p>Positioning and copy that give brands a voice people remember.</p></div>
+      <div class="card"><div class="card-icon">🔍</div><h3>SEO &amp; Content</h3><p>Content strategies and SEO frameworks that compound over time.</p></div>
+      <div class="card"><div class="card-icon">🎯</div><h3>Paid Media</h3><p>Google, Meta, and LinkedIn ads built for efficient CAC and ROAS.</p></div>
+      <div class="card"><div class="card-icon">👥</div><h3>Community Building</h3><p>Growing engaged audiences across newsletters and owned channels.</p></div>
+      <div class="card"><div class="card-icon">📊</div><h3>Analytics</h3><p>Turning raw data into clear insights for leadership teams.</p></div>
     </div>
   </section>
 
-  <!-- What I do -->
-  <div class="grid">
-    <div class="card">
-      <div class="card-icon">&#128200;</div>
-      <h3>Growth Marketing</h3>
-      <p>Data-driven campaigns that move the needle — from top-of-funnel awareness to conversion and retention.</p>
-    </div>
-    <div class="card">
-      <div class="card-icon">&#9997;&#65039;</div>
-      <h3>Brand Storytelling</h3>
-      <p>Positioning, messaging, and copy that give brands a voice people remember and trust.</p>
-    </div>
-    <div class="card">
-      <div class="card-icon">&#128269;</div>
-      <h3>SEO &amp; Content</h3>
-      <p>Long-form content strategies and SEO frameworks that compound over time.</p>
-    </div>
-    <div class="card">
-      <div class="card-icon">&#127919;</div>
-      <h3>Paid Media</h3>
-      <p>Google, Meta, and LinkedIn ad campaigns built for efficient CAC and strong ROAS.</p>
-    </div>
-    <div class="card">
-      <div class="card-icon">&#128101;</div>
-      <h3>Community Building</h3>
-      <p>Growing engaged audiences across newsletters, social, and owned channels.</p>
-    </div>
-    <div class="card">
-      <div class="card-icon">&#128202;</div>
-      <h3>Analytics &amp; Reporting</h3>
-      <p>Turning raw data into clear insights and actionable next steps for leadership teams.</p>
-    </div>
-  </div>
-
-  <div class="divider"></div>
-
-  <!-- Skills -->
-  <div class="skills">
-    <div class="section-label">Tools &amp; Skills</div>
+  <section>
+    <div class="label">Tools &amp; Skills</div>
     <div class="tags">
-      <span class="tag">HubSpot</span>
-      <span class="tag">Google Analytics 4</span>
-      <span class="tag">Meta Ads</span>
-      <span class="tag">Google Ads</span>
-      <span class="tag">Notion</span>
-      <span class="tag">Figma</span>
-      <span class="tag">Mailchimp</span>
-      <span class="tag">Webflow</span>
-      <span class="tag">Ahrefs</span>
-      <span class="tag">Semrush</span>
-      <span class="tag">Looker Studio</span>
-      <span class="tag">Slack</span>
-      <span class="tag">LinkedIn Ads</span>
-      <span class="tag">A/B Testing</span>
-      <span class="tag">CRO</span>
+      <span class="tag">HubSpot</span><span class="tag">Google Analytics 4</span><span class="tag">Meta Ads</span>
+      <span class="tag">Google Ads</span><span class="tag">Notion</span><span class="tag">Figma</span>
+      <span class="tag">Mailchimp</span><span class="tag">Webflow</span><span class="tag">Ahrefs</span>
+      <span class="tag">Semrush</span><span class="tag">Looker Studio</span><span class="tag">LinkedIn Ads</span>
+      <span class="tag">A/B Testing</span><span class="tag">CRO</span>
     </div>
-  </div>
+  </section>
 
-  <footer>&copy; 2026 Jay. All rights reserved.</footer>
+  <section>
+    <div class="label">About</div>
+    <div class="bio-text">
+      <p>Hey, I'm Jay — a marketer who believes good work speaks for itself.</p>
+      <p>I've built my career around understanding people: what they need, what moves them, and how to communicate in a way that actually lands. Whether it's strategy, content, or campaigns, I bring a sharp eye and a bias for clarity to everything I touch.</p>
+      <p>Always open to connecting with interesting people doing interesting things — feel free to reach out.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="label">Experience</div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-year">2023 – Now</div>
+        <div><h3>Senior Marketing Manager</h3><div class="tl-co">GrowthLab</div><p>Led end-to-end campaign strategy across paid and organic channels, growing pipeline 40% YoY. Owned brand voice, content calendar, and performance reporting for a team of five.</p></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2021 – 2023</div>
+        <div><h3>Marketing Manager</h3><div class="tl-co">Kova Digital</div><p>Managed a $500k annual ads budget across Meta and Google. Reduced CAC by 28% through A/B testing and audience segmentation. Built the company's first SEO content program from scratch.</p></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2019 – 2021</div>
+        <div><h3>Content &amp; SEO Strategist</h3><div class="tl-co">Bright Spark Agency</div><p>Developed content strategies for 12+ B2B SaaS clients. Grew organic traffic 3× for flagship accounts through keyword mapping, on-page optimisation, and link-building.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© <script>document.write(new Date().getFullYear())</script> Jay</span>
+    <a href="https://github.com/jaysaiexperiments-ux" target="_blank" rel="noopener">GitHub →</a>
+  </footer>
 
 </body>
 </html>
