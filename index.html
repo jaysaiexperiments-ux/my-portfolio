@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jay — Marketer</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0118;
+      --surface: #120826;
+      --border: #2a1650;
+      --accent: #ff3cac;
+      --accent2: #784ba0;
+      --accent3: #2b86c5;
+      --text: #f5f0ff;
+      --muted: #a393c8;
+      --radius: 14px;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(120, 75, 160, 0.35) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(43, 134, 197, 0.25) 0%, transparent 60%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 24px 80px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      max-width: 640px;
+      margin-bottom: 72px;
+    }
+
+    .avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff3cac 0%, #784ba0 50%, #2b86c5 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 auto 28px;
+      letter-spacing: -1px;
+      box-shadow: 0 0 32px rgba(255, 60, 172, 0.5), 0 0 64px rgba(120, 75, 160, 0.3);
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(90deg, #ff3cac, #784ba0, #2b86c5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 480px;
+      margin: 0 auto 32px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: linear-gradient(90deg, rgba(255,60,172,0.15), rgba(43,134,197,0.15));
+      border: 1px solid rgba(255, 60, 172, 0.4);
+      color: #ff7fd4;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 28px;
+    }
+
+    /* ── Cards grid ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      width: 100%;
+      max-width: 860px;
+      margin-bottom: 72px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+    }
+
+    .card-icon {
+      font-size: 1.6rem;
+      margin-bottom: 14px;
+    }
+
+    .card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+
+    .card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── Skills ── */
+    .skills {
+      width: 100%;
+      max-width: 860px;
+      margin-bottom: 72px;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tag {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-size: 0.88rem;
+      color: var(--text);
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+      cursor: default;
+    }
+
+    .tag:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #0d0d0d;
+    }
+
+    /* ── CTA ── */
+    .cta {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.15s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn:hover { opacity: 0.85; transform: translateY(-2px); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0d0d0d;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 80px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* ── Divider ── */
+    .divider {
+      width: 100%;
+      max-width: 860px;
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 56px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="avatar">J</div>
+    <div class="badge">Open to opportunities</div>
+    <h1>Hi, I'm <span>Jay.</span></h1>
+    <p>
+      I help brands cut through the noise — crafting campaigns, stories, and strategies that turn audiences into loyal customers.
+    </p>
+    <div class="cta">
+      <a href="mailto:jay@example.com" class="btn btn-primary">&#9993; Get in touch</a>
+      <a href="#" class="btn btn-ghost">View my work</a>
+    </div>
+  </section>
+
+  <!-- What I do -->
+  <div class="grid">
+    <div class="card">
+      <div class="card-icon">&#128200;</div>
+      <h3>Growth Marketing</h3>
+      <p>Data-driven campaigns that move the needle — from top-of-funnel awareness to conversion and retention.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">&#9997;&#65039;</div>
+      <h3>Brand Storytelling</h3>
+      <p>Positioning, messaging, and copy that give brands a voice people remember and trust.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">&#128269;</div>
+      <h3>SEO &amp; Content</h3>
+      <p>Long-form content strategies and SEO frameworks that compound over time.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">&#127919;</div>
+      <h3>Paid Media</h3>
+      <p>Google, Meta, and LinkedIn ad campaigns built for efficient CAC and strong ROAS.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">&#128101;</div>
+      <h3>Community Building</h3>
+      <p>Growing engaged audiences across newsletters, social, and owned channels.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">&#128202;</div>
+      <h3>Analytics &amp; Reporting</h3>
+      <p>Turning raw data into clear insights and actionable next steps for leadership teams.</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Skills -->
+  <div class="skills">
+    <div class="section-label">Tools &amp; Skills</div>
+    <div class="tags">
+      <span class="tag">HubSpot</span>
+      <span class="tag">Google Analytics 4</span>
+      <span class="tag">Meta Ads</span>
+      <span class="tag">Google Ads</span>
+      <span class="tag">Notion</span>
+      <span class="tag">Figma</span>
+      <span class="tag">Mailchimp</span>
+      <span class="tag">Webflow</span>
+      <span class="tag">Ahrefs</span>
+      <span class="tag">Semrush</span>
+      <span class="tag">Looker Studio</span>
+      <span class="tag">Slack</span>
+      <span class="tag">LinkedIn Ads</span>
+      <span class="tag">A/B Testing</span>
+      <span class="tag">CRO</span>
+    </div>
+  </div>
+
+  <footer>&copy; 2026 Jay. All rights reserved.</footer>
+
+</body>
+</html>
